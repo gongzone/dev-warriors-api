@@ -1,23 +1,23 @@
 import { FastifyInstance } from 'fastify';
-import {
-  getUsersHandler,
-  loginHandler,
-  signupUserHandler
-} from './user.service';
+
 import { $ref } from './user.schema';
 
+import UserService from './user.service';
+
 const userRoutes = async (fastify: FastifyInstance) => {
+  const userService = UserService.getInstance();
+
   fastify.post(
-    '/',
+    '/signup',
     {
       schema: {
-        body: $ref('createUserSchema'),
+        body: $ref('signupSchema'),
         response: {
-          201: $ref('createUserResponseSchema')
+          201: $ref('signupResponseSchema')
         }
       }
     },
-    signupUserHandler
+    userService.singup
   );
 
   fastify.post(
@@ -30,10 +30,8 @@ const userRoutes = async (fastify: FastifyInstance) => {
         }
       }
     },
-    loginHandler
+    userService.login
   );
-
-  fastify.get('/', { onRequest: [fastify.authenticate] }, getUsersHandler);
 };
 
 export default userRoutes;
