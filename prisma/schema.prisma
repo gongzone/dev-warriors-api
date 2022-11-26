@@ -11,20 +11,22 @@ datasource db {
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  email    String    @unique
-  name     String?
-  password String
-  proudcts Product[]
-}
-
-model Product {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  content   String?
-  price     Float
-  owner     User     @relation(fields: [ownerId], references: [id])
-  ownerId   Int
+  userId    String   @unique
+  password  String
+  email     String   @unique
+  // proudcts Product[]
 }
+
+// model Product {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   title     String   @db.VarChar(255)
+//   content   String?
+//   price     Float
+//   owner     User     @relation(fields: [ownerId], references: [id])
+//   ownerId   Int
+// }
