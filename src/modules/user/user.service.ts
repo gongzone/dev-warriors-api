@@ -1,75 +1,74 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
 import * as argon2 from 'argon2';
-import { CreateUserDto, LoginUserDto } from './user.schema';
-import { createUser, findUserByEmail, findUsers } from './user.repository';
+import { FastifyReply, FastifyRequest } from 'fastify';
+
 import server from '../../libs/sever';
 
-// class UserService {
-//   private static instance: UserService;
-//   public static getInstance() {
-//     if(!UserService.instance) {
-//       UserService.instance = new UserService();
-//     }
+import { SignupDTO, LoginUserDto } from './user.schema';
 
-//     return UserService.instance;
-//   }
+import { createUser } from './repository/commands';
+import { findUserByUserId } from './repository/queries';
 
-//   async singup() {
+export default class UserService {
+  private static instance: UserService;
+  public static getInstance() {
+    if (!UserService.instance) {
+      UserService.instance = new UserService();
+    }
 
-//   }
-// }
-
-export const signupUserHandler = async (
-  request: FastifyRequest<{
-    Body: CreateUserDto;
-  }>,
-  reply: FastifyReply
-) => {
-  const dto = request.body;
-
-  try {
-    const user = await createUser(dto);
-    return reply.code(201).send(user);
-  } catch (err) {
-    console.log(err);
-    return reply.code(500).send(err);
-  }
-};
-
-export const loginHandler = async (
-  request: FastifyRequest<{
-    Body: LoginUserDto;
-  }>,
-  reply: FastifyReply
-) => {
-  const dto = request.body;
-
-  const user = await findUserByEmail(dto.email);
-
-  if (!user) {
-    return reply.code(401).send({
-      message: 'Invalid email or password'
-    });
+    return UserService.instance;
   }
 
-  const isPasswordMatched = await argon2.verify(user.password, dto.password);
+  async singup(
+    request: FastifyRequest<{
+      Body: SignupDTO;
+    }>,
+    reply: FastifyReply
+  ) {
+    const userData = request.body;
 
-  if (!isPasswordMatched) {
-    return reply.code(401).send({
-      message: 'Invalid email or password'
-    });
+    try {
+      const user = await createUser(userData);
+      return reply.code(201).send(user);
+    } catch (err) {
+      console.log(err);
+      return reply.code(500).send(err);
+    }
   }
 
-  return {
-    accessToken: server.jwt.sign({
-      userId: user.id,
-      email: user.email,
-      name: user.name
-    })
-  };
-};
+  async login(
+    request: FastifyRequest<{
+      Body: LoginUserDto;
+    }>,
+    reply: FastifyReply
+  ) {
+    const userData = request.body;
 
-export const getUsersHandler = async () => {
-  const users = await findUsers();
-  return users;
-};
+    const targetUser = await findUserByUserId(userData.userId);
+
+    if (!targetUser) {
+      return reply.code(401).send({
+        message: 'Invalid email or password'
+      });
+    }
+
+    const isPasswordMatched = await argon2.verify(
+      targetUser.password,
+      userData.password
+    );
+
+    if (!isPasswordMatched) {
+      return reply.code(401).send({
+        message: 'Invalid email or password'
+      });
+    }
+
+    return {
+      accessToken: server.jwt.sign({
+        id: targetUser.id,
+        userId: targetUser.userId,
+        email: targetUser.email
+      })
+      // refreshToken 추가 필요 & jwt 인증 상세히 다루기 & postman token 인증 설정
+    };
+  }
+}
