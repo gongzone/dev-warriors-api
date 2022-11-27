@@ -2,12 +2,12 @@ lockfileVersion: 5.4
 
 specifiers:
   '@fastify/autoload': ^5.6.0
-  '@fastify/jwt': ^6.3.3
   '@fastify/swagger': ^8.2.0
   '@fastify/swagger-ui': ^1.3.0
   '@prisma/client': ^4.6.1
   '@types/node': ^18.11.9
   argon2: ^0.30.2
+  dotenv: ^16.0.3
   fast-jwt: ^2.0.2
   fastify: ^4.10.2
   fastify-plugin: ^4.3.0
@@ -22,11 +22,11 @@ specifiers:
 
 dependencies:
   '@fastify/autoload': 5.6.0
-  '@fastify/jwt': 6.4.0
   '@fastify/swagger': 8.2.0
   '@fastify/swagger-ui': 1.3.0
   '@prisma/client': 4.6.1
   argon2: 0.30.2
+  dotenv: 16.0.3
   fast-jwt: 2.0.2
   fastify: 4.10.2
   fastify-plugin: 4.3.0
@@ -82,16 +82,6 @@ packages:
     resolution: {integrity: sha512-cTKBV2J9+u6VaKDhX7HepSfPSzw+F+TSd+k0wzifj4rG+4E5PjSFJCk19P8R6tr/72cuzgGd+mbB3jFT6lvAgw==}
     dependencies:
       fast-json-stringify: 5.4.1
-    dev: false
-
-  /@fastify/jwt/6.4.0:
-    resolution: {integrity: sha512-1wwrOfIUKxfbm72Tvxrz7+H1XwX9aa1W8CGmHVxkYEdN7KA29+hO77FPF/c7zOaEkqMyZr6XfRaoYZMWz02J4A==}
-    dependencies:
-      '@fastify/error': 3.0.0
-      '@lukeed/ms': 2.0.1
-      fast-jwt: 2.0.2
-      fastify-plugin: 4.3.0
-      steed: 1.1.3
     dev: false
 
   /@fastify/static/6.5.1:
@@ -160,11 +150,6 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
-
-  /@lukeed/ms/2.0.1:
-    resolution: {integrity: sha512-Xs/4RZltsAL7pkvaNStUQt7netTkyxrS0K+RILcVr3TRMS/ToOg4I6uNfhB9SlGsnWBym4U+EaXq0f0cEMNkHA==}
-    engines: {node: '>=8'}
-    dev: false
 
   /@mapbox/node-pre-gyp/1.0.10:
     resolution: {integrity: sha512-4ySo4CjzStuprMwk35H5pPbkymjv1SF3jGLj6rAHp/xT/RF7TL7bd9CTm1xDY49K2qF7jmR/g7k+SkLETP6opA==}
@@ -804,6 +789,11 @@ packages:
       tslib: 2.4.1
     dev: false
 
+  /dotenv/16.0.3:
+    resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
+    dev: false
+
   /dynamic-dedupe/0.3.0:
     resolution: {integrity: sha512-ssuANeD+z97meYOqd50e04Ze5qp4bPqo8cCkI4TRjZkzAUgIDTrXV1R8QCdINpiI+hw14+rYazvTRdQrz0/rFQ==}
     dependencies:
@@ -930,13 +920,6 @@ packages:
     resolution: {integrity: sha512-qKRta6N7BWEFVlyonVY/V+BMLgFqktCUV0QjT259ekAIlbVrMaFnFLxJ4s/JPl4tou56S1BzPufI60bLe29fHA==}
     dev: false
 
-  /fastfall/1.5.1:
-    resolution: {integrity: sha512-KH6p+Z8AKPXnmA7+Iz2Lh8ARCMr+8WNPVludm1LGkZoD2MjY6LVnRMtTKhkdzI+jr0RzQWXKzKyBJm1zoHEL4Q==}
-    engines: {node: '>=0.10.0'}
-    dependencies:
-      reusify: 1.0.4
-    dev: false
-
   /fastify-plugin/4.3.0:
     resolution: {integrity: sha512-M3+i368lV0OYTJ5TfClIoPKEKSOF7112iiPdwgfSR0gN98BjA1Nk+c6oBHtfcVt9KiMxl+EQKHC1QNWo3ZOpYQ==}
     dev: false
@@ -990,24 +973,10 @@ packages:
       - supports-color
     dev: false
 
-  /fastparallel/2.4.1:
-    resolution: {integrity: sha512-qUmhxPgNHmvRjZKBFUNI0oZuuH9OlSIOXmJ98lhKPxMZZ7zS/Fi0wRHOihDSz0R1YiIOjxzOY4bq65YTcdBi2Q==}
-    dependencies:
-      reusify: 1.0.4
-      xtend: 4.0.2
-    dev: false
-
   /fastq/1.13.0:
     resolution: {integrity: sha512-YpkpUnK8od0o1hmeSc7UUs/eB/vIPWJYjKck2QKIzAf71Vm1AAQ3EbuZB3g2JIy+pg+ERD0vqI79KyZiB2e2Nw==}
     dependencies:
       reusify: 1.0.4
-    dev: false
-
-  /fastseries/1.7.2:
-    resolution: {integrity: sha512-dTPFrPGS8SNSzAt7u/CbMKCJ3s01N04s4JFbORHcmyvVfVKmbhMD1VtRbh5enGHxkaQDqWyLefiKOGGmohGDDQ==}
-    dependencies:
-      reusify: 1.0.4
-      xtend: 4.0.2
     dev: false
 
   /figures/3.2.0:
@@ -1961,16 +1930,6 @@ packages:
     engines: {node: '>= 0.8'}
     dev: false
 
-  /steed/1.1.3:
-    resolution: {integrity: sha512-EUkci0FAUiE4IvGTSKcDJIQ/eRUP2JJb56+fvZ4sdnguLTqIdKjSxUe138poW8mkvKWXW2sFPrgTsxqoISnmoA==}
-    dependencies:
-      fastfall: 1.5.1
-      fastparallel: 2.4.1
-      fastq: 1.13.0
-      fastseries: 1.7.2
-      reusify: 1.0.4
-    dev: false
-
   /string-width/4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
     engines: {node: '>=8'}
@@ -2250,6 +2209,7 @@ packages:
   /xtend/4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
+    dev: true
 
   /y18n/5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
