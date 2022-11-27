@@ -1,25 +1,7 @@
 import * as path from 'path';
 import server from './libs/sever';
 import autoload from '@fastify/autoload';
-
-declare module 'fastify' {
-  interface FastifyInstance {
-    authenticate: any;
-    config: {
-      JWT_SECRET_KEY: string;
-    };
-  }
-}
-
-declare module '@fastify/jwt' {
-  interface FastifyJWT {
-    user: {
-      id: number;
-      username: string;
-      email: string;
-    };
-  }
-}
+import 'dotenv/config';
 
 server.register(autoload, {
   dir: path.join(__dirname, 'plugins')
