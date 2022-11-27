@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const id = z.number();
 
-export const userId = z
+export const username = z
   .string({
     required_error: '사용자 아이디는 필수 값 입니다.',
     invalid_type_error: '사용자 아이디는 string이여야 합니다.'

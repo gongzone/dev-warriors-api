@@ -1,15 +1,15 @@
-import prisma from '../../../libs/prisma';
+import db from '../../../libs/db';
 import { SignupDTO } from '../user.schema';
 import * as argon2 from 'argon2';
 
-export const createUser = async (userData: SignupDTO) => {
-  const hashedPassword = await argon2.hash(userData.password);
+export const createUser = async ({ username, password, email }: SignupDTO) => {
+  const hashedPassword = await argon2.hash(password);
 
-  const user = await prisma.user.create({
+  const user = await db.user.create({
     data: {
-      userId: userData.userId,
+      username,
       password: hashedPassword,
-      email: userData.email
+      email
     }
   });
 

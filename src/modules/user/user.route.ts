@@ -1,6 +1,6 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
-import { $ref } from './user.schema';
+import { $ref, SignupDTO } from './user.schema';
 
 import UserService from './user.service';
 
@@ -13,11 +13,20 @@ const userRoutes = async (fastify: FastifyInstance) => {
       schema: {
         body: $ref('signupSchema'),
         response: {
-          201: $ref('signupResponseSchema')
+          201: $ref('signupResponseSchema'),
+          409: $ref('appErrorSchema')
         }
       }
     },
-    userService.singup
+    async (
+      request: FastifyRequest<{
+        Body: SignupDTO;
+      }>,
+      reply: FastifyReply
+    ) => {
+      const user = await userService.singup(request.body);
+      return reply.code(201).send(user);
+    }
   );
 
   fastify.post(

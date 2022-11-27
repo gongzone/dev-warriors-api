@@ -1,12 +1,11 @@
 import * as argon2 from 'argon2';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
-import server from '../../libs/sever';
-
 import { SignupDTO, LoginUserDto } from './user.schema';
 
 import { createUser } from './repository/commands';
-import { findUserByUserId } from './repository/queries';
+import { findUserByEmail, findUserByUsername } from './repository/queries';
+import AppError from '../../libs/app-error';
 
 export default class UserService {
   private static instance: UserService;
@@ -18,21 +17,16 @@ export default class UserService {
     return UserService.instance;
   }
 
-  async singup(
-    request: FastifyRequest<{
-      Body: SignupDTO;
-    }>,
-    reply: FastifyReply
-  ) {
-    const userData = request.body;
+  async singup(userData: SignupDTO) {
+    const foundUserByUsername = await findUserByUsername(userData.username);
+    const foundUserByEmail = await findUserByEmail(userData.email);
 
-    try {
-      const user = await createUser(userData);
-      return reply.code(201).send(user);
-    } catch (err) {
-      console.log(err);
-      return reply.code(500).send(err);
+    if (foundUserByUsername || foundUserByEmail) {
+      throw new AppError('UserExistsError');
     }
+
+    const user = await createUser(userData);
+    return user;
   }
 
   async login(
@@ -43,7 +37,7 @@ export default class UserService {
   ) {
     const userData = request.body;
 
-    const targetUser = await findUserByUserId(userData.userId);
+    const targetUser = await findUserByUsername(userData.username);
 
     if (!targetUser) {
       return reply.code(401).send({
@@ -62,12 +56,14 @@ export default class UserService {
       });
     }
 
+    const accessToken = await reply.jwtSign({
+      id: targetUser.id,
+      username: targetUser.username,
+      email: targetUser.email
+    });
+
     return {
-      accessToken: server.jwt.sign({
-        id: targetUser.id,
-        userId: targetUser.userId,
-        email: targetUser.email
-      })
+      accessToken
       // refreshToken 추가 필요 & jwt 인증 상세히 다루기 & postman token 인증 설정
     };
   }

@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { id, userId, password, confirmPassword, email } from './fields';
+import { id, username, password, confirmPassword, email } from './fields';
 
 export const signupSchema = z
   .object({
-    userId,
+    username,
     password,
     confirmPassword,
     email
@@ -15,6 +15,6 @@ export const signupSchema = z
 
 export const signupResponseSchema = z.object({
   id,
-  userId,
+  username,
   email
 });

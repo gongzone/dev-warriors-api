@@ -1,4 +1,4 @@
-import prisma from '../../libs/prisma';
+import prisma from '../../libs/db';
 import { CreateProductDto } from './product.schema';
 
 export const createProduct = async (
