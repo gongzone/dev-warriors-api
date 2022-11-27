@@ -1,11 +1,11 @@
-import { FastifyPluginCallback } from 'fastify';
+import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import { withRefResolver } from 'fastify-zod';
 
-const swaggerPlugin: FastifyPluginCallback = (fastify, options, done) => {
-  fastify
+const swaggerPlugin: FastifyPluginAsync = async (fastify, options) => {
+  await fastify
     .register(
       swagger,
       withRefResolver({
@@ -39,8 +39,6 @@ const swaggerPlugin: FastifyPluginCallback = (fastify, options, done) => {
       },
       transformSpecificationClone: true
     });
-
-  done();
 };
 
 export default fp(swaggerPlugin);
