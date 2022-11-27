@@ -1,5 +1,13 @@
 import { z } from 'zod';
-import { id, username, password, confirmPassword, email } from './fields';
+import {
+  id,
+  username,
+  password,
+  confirmPassword,
+  email,
+  accessToken,
+  refreshToken
+} from './fields';
 
 export const signupSchema = z
   .object({
@@ -14,7 +22,13 @@ export const signupSchema = z
   });
 
 export const signupResponseSchema = z.object({
-  id,
-  username,
-  email
+  tokens: z.object({
+    accessToken,
+    refreshToken
+  }),
+  user: z.object({
+    id,
+    username,
+    email
+  })
 });

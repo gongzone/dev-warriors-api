@@ -24,8 +24,8 @@ const userRoutes = async (fastify: FastifyInstance) => {
       }>,
       reply: FastifyReply
     ) => {
-      const user = await userService.singup(request.body);
-      return reply.code(201).send(user);
+      const authResult = await userService.singup(request.body);
+      return reply.code(201).send(authResult);
     }
   );
 
