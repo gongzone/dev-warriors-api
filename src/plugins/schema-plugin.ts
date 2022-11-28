@@ -1,9 +1,8 @@
 import fp from 'fastify-plugin';
 import { userSchemas } from '../modules/user/user.schema';
-import { productSchemas } from '../modules/product/product.schema';
 import { FastifyPluginCallback } from 'fastify';
 
-const schemas = [...userSchemas, ...productSchemas];
+const schemas = [...userSchemas];
 
 const schemaPlugin: FastifyPluginCallback = (fastify, options, done) => {
   for (const schema of schemas) {
@@ -13,4 +12,6 @@ const schemaPlugin: FastifyPluginCallback = (fastify, options, done) => {
   done();
 };
 
-export default fp(schemaPlugin);
+export default fp(schemaPlugin, {
+  name: 'schema'
+});

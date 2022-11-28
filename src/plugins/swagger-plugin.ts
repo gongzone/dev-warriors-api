@@ -41,4 +41,7 @@ const swaggerPlugin: FastifyPluginAsync = async (fastify, options) => {
     });
 };
 
-export default fp(swaggerPlugin);
+export default fp(swaggerPlugin, {
+  name: 'swagger',
+  dependencies: ['schema']
+});

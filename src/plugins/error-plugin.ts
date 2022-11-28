@@ -18,4 +18,6 @@ const errorPlugin: FastifyPluginCallback = (fastify, options, done) => {
   done();
 };
 
-export default fp(errorPlugin);
+export default fp(errorPlugin, {
+  name: 'error'
+});

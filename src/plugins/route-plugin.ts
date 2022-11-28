@@ -8,4 +8,7 @@ const routePlugin: FastifyPluginCallback = (fastify, options, done) => {
   done();
 };
 
-export default fp(routePlugin);
+export default fp(routePlugin, {
+  name: 'route',
+  dependencies: ['swagger']
+});
