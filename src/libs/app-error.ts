@@ -1,49 +1,70 @@
-import { z } from 'zod';
+import { Type } from '@sinclair/typebox';
 
-type ErrorName =
-  | 'UserExistsError'
-  | 'PasswordsNotMatched'
-  | 'AuthenticationError'
-  | 'UnknownError';
-type ErrorInfo = {
-  message: string;
-  statusCode: number;
-};
-
-const statusCodeMap: Record<ErrorName, ErrorInfo> = {
-  UserExistsError: {
-    message: '아이디 또는 이메일이 이미 존재합니다.',
-    statusCode: 409
+const errors = {
+  UserExists: {
+    statusCode: 409,
+    message: 'user already exists'
   },
-  PasswordsNotMatched: {
-    message: '비밀번호와 비밀번호 확인이 일치하지 않습니다.',
-    statusCode: 409
+  PasswordNotMatched: {
+    statusCode: 409,
+    message: 'password is not matched'
   },
-  AuthenticationError: {
-    message: '유효하지 않은 아이디 또는 비밀번호입니다.',
-    statusCode: 401
+  WrongCredentials: {
+    statusCode: 401,
+    message: 'Invalid username or password'
   },
-  UnknownError: {
-    message: '알 수 없는 에러가 발생하였습니다.',
-    statusCode: 500
+  Unknown: {
+    statusCode: 500,
+    message: 'Unknown error'
+  },
+  Unauthorized: {
+    statusCode: 401,
+    message: 'Unauthorized'
+  },
+  BadRequest: {
+    statusCode: 400,
+    message: 'Bad Request'
+  },
+  RefreshFailure: {
+    statusCode: 401,
+    message: 'Failed to refresh token'
+  },
+  NotFound: {
+    statusCode: 404,
+    message: 'Not Found'
+  },
+  Forbidden: {
+    statusCode: 403,
+    message: 'Forbidden'
+  },
+  InvalidURL: {
+    statusCode: 422,
+    message: 'Invalid URL'
+  },
+  AlreadyExists: {
+    statusCode: 409,
+    message: 'The data already exists'
   }
-};
+} as const;
 
-class AppError extends Error {
+type ErrorName = keyof typeof errors;
+
+export default class AppError extends Error {
   public statusCode: number;
 
   constructor(public name: ErrorName) {
-    const info = statusCodeMap[name];
+    super(errors[name].message);
 
-    super(info.message);
-    this.statusCode = info.statusCode;
+    this.statusCode = errors[name].statusCode;
   }
 }
 
-export const appErrorSchema = z.object({
-  name: z.string(),
-  message: z.string(),
-  statusCode: z.number()
+export const appErrorSchema = Type.Object({
+  name: Type.String(),
+  message: Type.String(),
+  statusCode: Type.Number()
 });
 
-export default AppError;
+export function isAppError(error: any): error is AppError {
+  return error instanceof AppError;
+}

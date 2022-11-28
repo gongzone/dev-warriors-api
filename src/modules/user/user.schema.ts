@@ -4,6 +4,7 @@ import { buildJsonSchemas } from 'fastify-zod';
 import { appErrorSchema } from '../../libs/app-error';
 import { signupSchema, signupResponseSchema } from './schema/singup';
 import { loginSchema, loginResponseSchema } from './schema/login';
+import { getmeResponseSchema } from './schema/getme';
 
 export type SignupDTO = z.infer<typeof signupSchema>;
 export type LoginDto = z.infer<typeof loginSchema>;
@@ -14,7 +15,8 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas(
     signupSchema,
     signupResponseSchema,
     loginSchema,
-    loginResponseSchema
+    loginResponseSchema,
+    getmeResponseSchema
   },
   { $id: 'userSchemas' }
 );

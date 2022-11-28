@@ -48,6 +48,22 @@ const userRoutes = async (fastify: FastifyInstance) => {
       return reply.code(200).send(result);
     }
   );
+
+  fastify.get(
+    '/me',
+    {
+      schema: {
+        response: {
+          200: $ref('getmeResponseSchema'),
+          401: $ref('appErrorSchema')
+        }
+      }
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const result = await userService.getme(request.user);
+      return reply.code(200).send(result);
+    }
+  );
 };
 
 export default userRoutes;

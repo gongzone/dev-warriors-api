@@ -2,10 +2,13 @@ import * as path from 'path';
 import server from './libs/sever';
 import autoload from '@fastify/autoload';
 import 'dotenv/config';
+import authRoutes from './modules/auth/auth.route';
 
 server.register(autoload, {
   dir: path.join(__dirname, 'plugins')
 });
+
+server.register(authRoutes, { prefix: 'api/auth' });
 
 const startServer = async () => {
   try {

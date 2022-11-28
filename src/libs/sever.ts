@@ -1,7 +1,7 @@
 import Fastify from 'fastify';
 
 const server = Fastify({
-  logger: true,
+  logger: true
 });
 
 export default server;
