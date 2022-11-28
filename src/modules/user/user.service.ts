@@ -1,12 +1,12 @@
 import * as argon2 from 'argon2';
-import { FastifyReply, FastifyRequest } from 'fastify';
 
-import { SignupDTO, LoginUserDto } from './user.schema';
+import { LoginDto, SignupDTO } from './user.schema';
 
 import { createUser } from './repository/commands';
 import { findUserByEmail, findUserByUsername } from './repository/queries';
 import AppError from '../../libs/app-error';
 import { generateToken } from '../../libs/token';
+import { User } from '@prisma/client';
 
 export default class UserService {
   private static instance: UserService;
@@ -18,7 +18,9 @@ export default class UserService {
     return UserService.instance;
   }
 
-  private async generateTokens(userId: number, username: string) {
+  private async generateTokens(user: User) {
+    const { id: userId, username } = user;
+
     const [accessToken, refreshToken] = await Promise.all([
       generateToken({
         type: 'access_token',
@@ -39,17 +41,21 @@ export default class UserService {
     };
   }
 
-  async singup(userData: SignupDTO) {
-    const foundUserByUsername = await findUserByUsername(userData.username);
-    const foundUserByEmail = await findUserByEmail(userData.email);
+  async singup({ username, password, confirmPassword, email }: SignupDTO) {
+    const foundUserByUsername = await findUserByUsername(username);
+    const foundUserByEmail = await findUserByEmail(email);
 
     if (foundUserByUsername || foundUserByEmail) {
       throw new AppError('UserExistsError');
     }
 
-    const user = await createUser(userData);
+    if (password !== confirmPassword) {
+      throw new AppError('PasswordsNotMatched');
+    }
 
-    const tokens = await this.generateTokens(user.id, user.username);
+    const user = await createUser({ username, password, email });
+
+    const tokens = await this.generateTokens(user);
 
     return {
       tokens,
@@ -57,36 +63,21 @@ export default class UserService {
     };
   }
 
-  async login(
-    request: FastifyRequest<{
-      Body: LoginUserDto;
-    }>,
-    reply: FastifyReply
-  ) {
-    //   const userData = request.body;
-    //   const targetUser = await findUserByUsername(userData.username);
-    //   if (!targetUser) {
-    //     return reply.code(401).send({
-    //       message: 'Invalid email or password'
-    //     });
-    //   }
-    //   const isPasswordMatched = await argon2.verify(
-    //     targetUser.password,
-    //     userData.password
-    //   );
-    //   if (!isPasswordMatched) {
-    //     return reply.code(401).send({
-    //       message: 'Invalid email or password'
-    //     });
-    //   }
-    //   const accessToken = await reply.jwtSign({
-    //     id: targetUser.id,
-    //     username: targetUser.username,
-    //     email: targetUser.email
-    //   });
-    //   return {
-    //     accessToken
-    //     // refreshToken 추가 필요 & jwt 인증 상세히 다루기 & postman token 인증 설정
-    //   };
+  async login({ username, password }: LoginDto) {
+    const foundUserByUsername = await findUserByUsername(username);
+
+    if (!foundUserByUsername) {
+      throw new AppError('AuthenticationError');
+    }
+
+    const matched = await argon2.verify(foundUserByUsername.password, password);
+
+    if (!matched) {
+      throw new AppError('AuthenticationError');
+    }
+
+    const tokens = await this.generateTokens(foundUserByUsername);
+
+    return { tokens, user: foundUserByUsername };
   }
 }

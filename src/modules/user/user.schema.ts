@@ -6,7 +6,7 @@ import { signupSchema, signupResponseSchema } from './schema/singup';
 import { loginSchema, loginResponseSchema } from './schema/login';
 
 export type SignupDTO = z.infer<typeof signupSchema>;
-export type LoginUserDto = z.infer<typeof loginSchema>;
+export type LoginDto = z.infer<typeof loginSchema>;
 
 export const { schemas: userSchemas, $ref } = buildJsonSchemas(
   {

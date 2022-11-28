@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
-type ErrorName = 'UserExistsError' | 'AuthenticationError' | 'UnknownError';
+type ErrorName =
+  | 'UserExistsError'
+  | 'PasswordsNotMatched'
+  | 'AuthenticationError'
+  | 'UnknownError';
 type ErrorInfo = {
   message: string;
   statusCode: number;
@@ -9,6 +13,10 @@ type ErrorInfo = {
 const statusCodeMap: Record<ErrorName, ErrorInfo> = {
   UserExistsError: {
     message: '아이디 또는 이메일이 이미 존재합니다.',
+    statusCode: 409
+  },
+  PasswordsNotMatched: {
+    message: '비밀번호와 비밀번호 확인이 일치하지 않습니다.',
     statusCode: 409
   },
   AuthenticationError: {
