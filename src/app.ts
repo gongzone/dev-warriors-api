@@ -3,12 +3,14 @@ import server from './libs/sever';
 import autoload from '@fastify/autoload';
 import 'dotenv/config';
 import authRoutes from './modules/auth/auth.route';
+import userRoutes from './modules/user/user.route';
 
 server.register(autoload, {
   dir: path.join(__dirname, 'plugins')
 });
 
 server.register(authRoutes, { prefix: 'api/auth' });
+server.register(userRoutes, { prefix: 'api/users' });
 
 const startServer = async () => {
   try {

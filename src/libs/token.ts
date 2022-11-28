@@ -1,4 +1,4 @@
-import { createSigner, createVerifier } from 'fast-jwt';
+import { createSigner, createVerifier, TokenError } from 'fast-jwt';
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
@@ -53,4 +53,8 @@ export async function validateToken(token: string) {
   } catch (err) {
     console.log(err);
   }
+}
+
+export function isTokenError(error: any) {
+  return error instanceof TokenError;
 }

@@ -38,7 +38,8 @@ export const signupSchema = {
   body: signupBody,
   response: {
     201: authResponse,
-    409: appErrorSchema
+    409: appErrorSchema,
+    422: appErrorSchema
   }
 };
 

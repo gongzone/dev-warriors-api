@@ -1,13 +1,15 @@
 import { Type } from '@sinclair/typebox';
 
+// 에러처리 공부 필요..
+
 const errors = {
   UserExists: {
     statusCode: 409,
     message: 'user already exists'
   },
   PasswordNotMatched: {
-    statusCode: 409,
-    message: 'password is not matched'
+    statusCode: 422,
+    message: 'password does not match'
   },
   WrongCredentials: {
     statusCode: 401,
@@ -64,6 +66,11 @@ export const appErrorSchema = Type.Object({
   message: Type.String(),
   statusCode: Type.Number()
 });
+
+// appErrorSchema.example = {
+//   name: 'hi',
+//   message: ''
+// };
 
 export function isAppError(error: any): error is AppError {
   return error instanceof AppError;
