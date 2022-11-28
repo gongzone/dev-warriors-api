@@ -1,11 +1,9 @@
-import { FastifyPluginCallback } from 'fastify';
+import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import userRoutes from '../modules/user/user.route';
 
-const routePlugin: FastifyPluginCallback = (fastify, options, done) => {
+const routePlugin: FastifyPluginAsync = async (fastify) => {
   fastify.register(userRoutes, { prefix: 'api/users' });
-
-  done();
 };
 
 export default fp(routePlugin, {

@@ -4,7 +4,7 @@ import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import { withRefResolver } from 'fastify-zod';
 
-const swaggerPlugin: FastifyPluginAsync = async (fastify, options) => {
+const swaggerPlugin: FastifyPluginAsync = async (fastify) => {
   await fastify
     .register(
       swagger,

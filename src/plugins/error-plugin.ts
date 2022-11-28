@@ -1,8 +1,8 @@
-import { FastifyPluginCallback } from 'fastify';
+import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import AppError from '../libs/app-error';
 
-const errorPlugin: FastifyPluginCallback = (fastify, options, done) => {
+const errorPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.setErrorHandler((error, request, reply) => {
     if (error instanceof AppError) {
       return reply.code(error.statusCode ?? 500).send({
@@ -14,8 +14,6 @@ const errorPlugin: FastifyPluginCallback = (fastify, options, done) => {
 
     return error;
   });
-
-  done();
 };
 
 export default fp(errorPlugin, {
