@@ -1,4 +1,4 @@
-import { createSigner, createVerifier, TokenError } from 'fast-jwt';
+import { createSigner, createVerifier } from 'fast-jwt';
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
@@ -11,6 +11,7 @@ interface AccessTokenPayload {
   userId: number;
   tokenId: number;
   username: string;
+  email: string;
 }
 
 interface RefreshTokenPayload {

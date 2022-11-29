@@ -17,14 +17,15 @@ export default class UserService {
   }
 
   private async generateTokens(user: User) {
-    const { id: userId, username } = user;
+    const { id: userId, username, email } = user;
 
     const [accessToken, refreshToken] = await Promise.all([
       generateToken({
         type: 'access_token',
         userId,
         tokenId: 1,
-        username: username
+        username: username,
+        email: email
       }),
       await generateToken({
         type: 'refresh_token',

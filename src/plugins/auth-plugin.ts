@@ -20,7 +20,7 @@ const authPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.addHook('preHandler', async (request, reply) => {
     const { authorization } = request.headers;
 
-    if (!authorization || authorization.includes('Bearer')) {
+    if (!authorization || !authorization.includes('Bearer')) {
       return;
     }
 
