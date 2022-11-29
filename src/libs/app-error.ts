@@ -1,4 +1,5 @@
 import { Type } from '@sinclair/typebox';
+import { TokenError } from 'fast-jwt';
 
 // 에러처리 공부 필요..
 
@@ -74,4 +75,8 @@ export const appErrorSchema = Type.Object({
 
 export function isAppError(error: any): error is AppError {
   return error instanceof AppError;
+}
+
+export function isTokenError(error: any) {
+  return error instanceof TokenError;
 }
