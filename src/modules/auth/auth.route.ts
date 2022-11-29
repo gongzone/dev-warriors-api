@@ -1,4 +1,5 @@
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
+import { tokensDuration } from '../../libs/token';
 
 import { signupSchema, loginSchema } from './auth.schema';
 
@@ -25,6 +26,16 @@ const authRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     },
     async (request, reply) => {
       const result = await authService.login(request.body);
+      reply.setCookie('access_token', result.tokens.accessToken, {
+        httpOnly: true,
+        expires: new Date(Date.now() + tokensDuration.access_token),
+        path: '/'
+      });
+      reply.setCookie('refresh_token', result.tokens.refreshToken, {
+        httpOnly: true,
+        expires: new Date(Date.now() + tokensDuration.refresh_token),
+        path: '/'
+      });
       return reply.code(200).send(result);
     }
   );

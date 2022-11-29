@@ -1,5 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
+import fastifyCookie from '@fastify/cookie';
 import { isTokenError } from '../libs/app-error';
 import { validateToken } from '../libs/token';
 declare module 'fastify' {
@@ -14,17 +15,14 @@ declare module 'fastify' {
 }
 
 const authPlugin: FastifyPluginAsync = async (fastify) => {
+  fastify.register(fastifyCookie);
   fastify.decorateRequest('user', null);
   fastify.decorateRequest('isExpiredToken', false);
 
   fastify.addHook('preHandler', async (request, reply) => {
-    const { authorization } = request.headers;
-
-    if (!authorization || !authorization.includes('Bearer')) {
-      return;
-    }
-
-    const token = authorization.split('Bearer ')[1];
+    const token = request.headers.authorization?.split('Bearer ')[1] ?? request.cookies.access_token
+    
+    if(!token) return;
 
     try {
       const decoded = await validateToken(token);
@@ -44,5 +42,6 @@ const authPlugin: FastifyPluginAsync = async (fastify) => {
 };
 
 export default fp(authPlugin, {
-  name: 'auth'
+  name: 'auth',
+  dependencies: 
 });
