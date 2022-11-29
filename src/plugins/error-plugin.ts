@@ -1,10 +1,10 @@
 import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
-import { isAppError } from '../libs/app-error';
+import AppError from '../libs/app-error';
 
 const errorPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.setErrorHandler((error, request, reply) => {
-    if (isAppError(error)) {
+    if (error instanceof AppError) {
       return reply.code(error.statusCode).send({
         name: error.name,
         message: error.message,

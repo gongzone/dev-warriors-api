@@ -72,11 +72,3 @@ export const appErrorSchema = Type.Object({
 //   name: 'hi',
 //   message: ''
 // };
-
-export function isAppError(error: any): error is AppError {
-  return error instanceof AppError;
-}
-
-export function isTokenError(error: any) {
-  return error instanceof TokenError;
-}

@@ -1,4 +1,5 @@
-import { createSigner, createVerifier } from 'fast-jwt';
+import { createSigner, createVerifier, TokenError } from 'fast-jwt';
+import AppError from './app-error';
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
@@ -6,7 +7,7 @@ if (!JWT_SECRET_KEY) {
   console.warn('JWT_SECRET_KEY is not defined in .env file');
 }
 
-interface AccessTokenPayload {
+export interface AccessTokenPayload {
   type: 'access_token';
   userId: number;
   tokenId: number;
@@ -14,13 +15,13 @@ interface AccessTokenPayload {
   email: string;
 }
 
-interface RefreshTokenPayload {
+export interface RefreshTokenPayload {
   type: 'refresh_token';
   tokenId: number;
   rotationCounter: number;
 }
 
-type TokenPayload = AccessTokenPayload | RefreshTokenPayload;
+export type TokenPayload = AccessTokenPayload | RefreshTokenPayload;
 
 export const tokensDuration = {
   access_token: 1000 * 60 * 60,
@@ -33,25 +34,25 @@ export async function generateToken(payload: TokenPayload) {
     expiresIn: tokensDuration[payload.type]
   });
 
+  // 토큰 생성 실패 시 에러 코드 보낼 것.
   const token = await signWithPromise(payload);
-
-  if (!token) {
-    throw new Error('토큰이 존재하지 않습니다.');
-  }
-
   return token;
 }
 
 export async function validateToken(token: string) {
-  try {
-    const verifyWithPromise = createVerifier({
-      key: async () => JWT_SECRET_KEY,
-      cache: 1000
-    });
+  const verifyWithPromise = createVerifier({
+    key: async () => JWT_SECRET_KEY,
+    cache: 1000
+  });
 
+  try {
     const payload = await verifyWithPromise(token);
     return payload;
   } catch (err) {
-    console.log(err);
+    if (err instanceof TokenError) {
+      if (err.code === 'FAST_JWT_EXPIRED')
+        throw new AppError('Unauthorized'); // expired 에러 보낼 것.
+      else throw new AppError('Unauthorized');
+    }
   }
 }

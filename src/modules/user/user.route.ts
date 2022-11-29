@@ -9,11 +9,11 @@ const userRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.get(
     '/me',
     {
-      schema: getmeSchema
+      schema: getmeSchema,
+      preHandler: [fastify.requireAuth]
     },
     async (request, reply) => {
-      const user = await userService.getme(request);
-      reply.code(200).send(user);
+      return reply.code(200).send(request.user);
     }
   );
 };

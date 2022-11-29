@@ -12,14 +12,6 @@ export default class UserService {
   }
 
   async getme(request: FastifyRequest) {
-    if (request.isExpiredToken) {
-      throw new AppError('Unauthorized');
-    }
-
-    if (!request.user) {
-      throw new AppError('Unauthorized');
-    }
-
     return request.user;
   }
 }
