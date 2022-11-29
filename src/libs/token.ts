@@ -54,7 +54,3 @@ export async function validateToken(token: string) {
     console.log(err);
   }
 }
-
-export function isTokenError(error: any) {
-  return error instanceof TokenError;
-}
