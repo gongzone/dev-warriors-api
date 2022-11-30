@@ -6,7 +6,7 @@ import {
   RefreshTokenPayload,
   validateToken
 } from '../../libs/token';
-import { User } from '@prisma/client';
+import { Token, User } from '@prisma/client';
 import db from '../../libs/db';
 import { LoginBodyType, SignupBodyType } from './auth.schema';
 
@@ -27,25 +27,25 @@ export default class UserService {
       }
     });
 
-    return token.id;
+    return token;
   }
 
-  private async generateTokens(user: User, existingTokenId?: number) {
+  private async generateTokens(user: User, tokenItem?: Token) {
     const { id: userId, username, email } = user;
-    const tokenId = existingTokenId ?? (await this.createTokenId(userId));
+    const token = tokenItem ?? (await this.createTokenId(userId));
 
     const [accessToken, refreshToken] = await Promise.all([
       generateToken({
         type: 'access_token',
         userId,
-        tokenId,
+        tokenId: token.id,
         username: username,
         email: email
       }),
       await generateToken({
         type: 'refresh_token',
-        tokenId,
-        rotationCounter: 1
+        tokenId: token.id,
+        rotationCounter: token.rotationCounter
       })
     ]);
 
@@ -126,8 +126,29 @@ export default class UserService {
       });
 
       if (!tokenItem) throw new Error('Token not found');
+      if (tokenItem.blocked) throw new Error('Token is blocked');
+      if (tokenItem.rotationCounter !== decoded.rotationCounter) {
+        await db.token.update({
+          where: {
+            id: tokenItem.id
+          },
+          data: {
+            blocked: true
+          }
+        });
+        throw new Error('Rotation counter does not match');
+      }
 
-      const tokens = await this.generateTokens(tokenItem.user, decoded.tokenId);
+      tokenItem.rotationCounter += 1;
+      await db.token.update({
+        where: {
+          id: tokenItem.id
+        },
+        data: {
+          rotationCounter: tokenItem.rotationCounter
+        }
+      });
+      const tokens = await this.generateTokens(tokenItem.user, tokenItem);
       return tokens;
     } catch (err) {
       throw new AppError('RefreshFailure');
