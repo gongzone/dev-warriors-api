@@ -38,7 +38,10 @@ const requireAuthPlugin: FastifyPluginAsync = async (fastify) => {
 
       if (!token) throw new AppError('Unauthorized');
 
-      const decoded: AccessTokenPayload = await validateToken(token);
+      const decoded = await validateToken<AccessTokenPayload>(token);
+
+      if (!decoded) throw new AppError('Unauthorized');
+
       request.user = {
         id: decoded.userId,
         username: decoded.username,

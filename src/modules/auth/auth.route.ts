@@ -1,7 +1,8 @@
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
-import { tokensDuration } from '../../libs/token';
+import AppError from '../../libs/app-error';
+import { setTokenCookie } from '../../libs/token';
 
-import { signupSchema, loginSchema } from './auth.schema';
+import { signupSchema, loginSchema, refreshSchema } from './auth.schema';
 
 import AuthService from './auth.service';
 
@@ -26,16 +27,28 @@ const authRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     },
     async (request, reply) => {
       const result = await authService.login(request.body);
-      reply.setCookie('access_token', result.tokens.accessToken, {
-        httpOnly: true,
-        expires: new Date(Date.now() + tokensDuration.access_token),
-        path: '/'
-      });
-      reply.setCookie('refresh_token', result.tokens.refreshToken, {
-        httpOnly: true,
-        expires: new Date(Date.now() + tokensDuration.refresh_token),
-        path: '/'
-      });
+      setTokenCookie(reply, result.tokens);
+      return reply.code(200).send(result);
+    }
+  );
+
+  fastify.post(
+    '/refresh',
+    {
+      schema: refreshSchema
+    },
+    async (request, reply) => {
+      const refreshToken =
+        request.body.refreshToken ?? request.cookies.refresh_token;
+
+      console.log(refreshToken);
+
+      if (!refreshToken) {
+        throw new AppError('BadRequest');
+      }
+
+      const result = await authService.refreshToken(refreshToken);
+      setTokenCookie(reply, result);
       return reply.code(200).send(result);
     }
   );

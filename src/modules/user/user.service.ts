@@ -10,8 +10,4 @@ export default class UserService {
 
     return UserService.instance;
   }
-
-  async getme(request: FastifyRequest) {
-    return request.user;
-  }
 }

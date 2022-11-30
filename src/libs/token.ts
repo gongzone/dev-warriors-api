@@ -1,4 +1,5 @@
 import { createSigner, createVerifier, TokenError } from 'fast-jwt';
+import { FastifyReply } from 'fastify';
 import AppError from './app-error';
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
@@ -39,14 +40,14 @@ export async function generateToken(payload: TokenPayload) {
   return token;
 }
 
-export async function validateToken(token: string) {
+export async function validateToken<T>(token: string) {
   const verifyWithPromise = createVerifier({
     key: async () => JWT_SECRET_KEY,
     cache: 1000
   });
 
   try {
-    const payload = await verifyWithPromise(token);
+    const payload: T = await verifyWithPromise(token);
     return payload;
   } catch (err) {
     if (err instanceof TokenError) {
@@ -55,4 +56,20 @@ export async function validateToken(token: string) {
       else throw new AppError('Unauthorized');
     }
   }
+}
+
+export function setTokenCookie(
+  reply: FastifyReply,
+  tokens: { accessToken: string; refreshToken: string }
+) {
+  reply.setCookie('access_token', tokens.accessToken, {
+    httpOnly: true,
+    expires: new Date(Date.now() + tokensDuration.access_token),
+    path: '/'
+  });
+  reply.setCookie('refresh_token', tokens.refreshToken, {
+    httpOnly: true,
+    expires: new Date(Date.now() + tokensDuration.refresh_token),
+    path: '/'
+  });
 }

@@ -1,7 +1,11 @@
 import * as argon2 from 'argon2';
 
 import AppError from '../../libs/app-error';
-import { generateToken } from '../../libs/token';
+import {
+  generateToken,
+  RefreshTokenPayload,
+  validateToken
+} from '../../libs/token';
 import { User } from '@prisma/client';
 import db from '../../libs/db';
 import { LoginBodyType, SignupBodyType } from './auth.schema';
@@ -16,20 +20,31 @@ export default class UserService {
     return UserService.instance;
   }
 
-  private async generateTokens(user: User) {
+  private async createTokenId(userId: number) {
+    const token = await db.token.create({
+      data: {
+        userId
+      }
+    });
+
+    return token.id;
+  }
+
+  private async generateTokens(user: User, existingTokenId?: number) {
     const { id: userId, username, email } = user;
+    const tokenId = existingTokenId ?? (await this.createTokenId(userId));
 
     const [accessToken, refreshToken] = await Promise.all([
       generateToken({
         type: 'access_token',
         userId,
-        tokenId: 1,
+        tokenId,
         username: username,
         email: email
       }),
       await generateToken({
         type: 'refresh_token',
-        tokenId: 1,
+        tokenId,
         rotationCounter: 1
       })
     ]);
@@ -93,5 +108,29 @@ export default class UserService {
     const tokens = await this.generateTokens(foundUserByUsername);
 
     return { tokens, user: foundUserByUsername };
+  }
+
+  async refreshToken(token: string) {
+    try {
+      const decoded = await validateToken<RefreshTokenPayload>(token);
+
+      if (!decoded) throw new Error('Token validation failed');
+
+      const tokenItem = await db.token.findUnique({
+        where: {
+          id: decoded.tokenId
+        },
+        include: {
+          user: true
+        }
+      });
+
+      if (!tokenItem) throw new Error('Token not found');
+
+      const tokens = await this.generateTokens(tokenItem.user, decoded.tokenId);
+      return tokens;
+    } catch (err) {
+      throw new AppError('RefreshFailure');
+    }
   }
 }

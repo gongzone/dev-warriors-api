@@ -18,6 +18,10 @@ const loginBody = Type.Object({
   password: Type.String()
 });
 
+const refreshBody = Type.Object({
+  refreshToken: Type.Optional(Type.String())
+});
+
 const authResponse = Type.Object({
   tokens: Type.Object({
     accessToken: Type.String(),
@@ -28,6 +32,11 @@ const authResponse = Type.Object({
     username: Type.String(),
     email: Type.String()
   })
+});
+
+const refreshResponse = Type.Object({
+  accessToken: Type.String(),
+  refreshToken: Type.String()
 });
 
 export type SignupBodyType = Static<typeof signupBody>;
@@ -48,6 +57,15 @@ export const loginSchema = {
   body: loginBody,
   response: {
     200: authResponse,
+    401: appErrorSchema
+  }
+};
+
+export const refreshSchema = {
+  tags: ['auth'],
+  body: refreshBody,
+  response: {
+    200: refreshResponse,
     401: appErrorSchema
   }
 };
