@@ -13,6 +13,7 @@
     "noFallthroughCasesInSwitch": true,
     "useDefineForClassFields": true,
     "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
     "outDir": "build",
     "lib": ["esnext"]

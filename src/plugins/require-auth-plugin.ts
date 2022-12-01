@@ -2,7 +2,6 @@ import { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import AppError from '../libs/app-error';
 import { AccessTokenPayload, validateToken } from '../libs/token';
-import fastifyCookie from '@fastify/cookie';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -25,7 +24,6 @@ declare module 'fastify' {
 }
 
 const requireAuthPlugin: FastifyPluginAsync = async (fastify) => {
-  fastify.register(fastifyCookie);
   fastify.decorateRequest('user', null);
   fastify.decorateRequest('isExpiredToken', false);
 

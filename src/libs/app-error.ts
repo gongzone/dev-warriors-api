@@ -1,5 +1,4 @@
 import { Type } from '@sinclair/typebox';
-import { TokenError } from 'fast-jwt';
 
 // 에러처리 공부 필요..
 

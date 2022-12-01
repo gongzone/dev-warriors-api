@@ -20,7 +20,7 @@ export default class UserService {
     return UserService.instance;
   }
 
-  private async createTokenId(userId: number) {
+  private async createToken(userId: number) {
     const token = await db.token.create({
       data: {
         userId
@@ -32,7 +32,7 @@ export default class UserService {
 
   private async generateTokens(user: User, tokenItem?: Token) {
     const { id: userId, username, email } = user;
-    const token = tokenItem ?? (await this.createTokenId(userId));
+    const token = tokenItem ?? (await this.createToken(userId));
 
     const [accessToken, refreshToken] = await Promise.all([
       generateToken({
