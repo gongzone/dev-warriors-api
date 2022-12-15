@@ -34,6 +34,11 @@ const requireAuthPlugin: FastifyPluginAsync = async (fastify) => {
         request.headers.authorization?.split('Bearer ')[1] ??
         request.cookies.access_token;
 
+      if (request.cookies.refresh_token && !token) {
+        request.isExpiredToken = true;
+        return;
+      }
+
       if (!token) throw new AppError('Unauthorized');
 
       const decoded = await validateToken<AccessTokenPayload>(token);

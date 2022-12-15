@@ -16,6 +16,7 @@ const authRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     },
     async (request, reply) => {
       const result = await authService.singup(request.body);
+      setTokenCookie(reply, result.tokens);
       return reply.code(201).send(result);
     }
   );
