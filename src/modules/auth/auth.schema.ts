@@ -27,6 +27,7 @@ const authResponse = Type.Object({
     accessToken: Type.String(),
     refreshToken: Type.String()
   }),
+  expiredDate: Type.String(),
   user: Type.Object({
     id: Type.Number(),
     username: Type.String(),
@@ -36,7 +37,8 @@ const authResponse = Type.Object({
 
 const refreshResponse = Type.Object({
   accessToken: Type.String(),
-  refreshToken: Type.String()
+  refreshToken: Type.String(),
+  expiredDate: Type.String()
 });
 
 export type SignupBodyType = Static<typeof signupBody>;

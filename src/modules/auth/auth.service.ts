@@ -4,6 +4,7 @@ import AppError from '../../libs/app-error';
 import {
   generateToken,
   RefreshTokenPayload,
+  tokensDuration,
   validateToken
 } from '../../libs/token';
 import { Token, User } from '@prisma/client';
@@ -84,6 +85,7 @@ export default class UserService {
 
     return {
       tokens,
+      expiredDate: new Date(Date.now() + tokensDuration.access_token),
       user
     };
   }
@@ -107,7 +109,11 @@ export default class UserService {
 
     const tokens = await this.generateTokens(foundUserByUsername);
 
-    return { tokens, user: foundUserByUsername };
+    return {
+      tokens,
+      expiredDate: new Date(Date.now() + tokensDuration.access_token),
+      user: foundUserByUsername
+    };
   }
 
   async refreshToken(token: string) {
@@ -127,6 +133,7 @@ export default class UserService {
 
       if (!tokenItem) throw new Error('Token not found');
       if (tokenItem.blocked) throw new Error('Token is blocked');
+
       if (tokenItem.rotationCounter !== decoded.rotationCounter) {
         await db.token.update({
           where: {
@@ -149,7 +156,10 @@ export default class UserService {
         }
       });
       const tokens = await this.generateTokens(tokenItem.user, tokenItem);
-      return tokens;
+      return {
+        ...tokens,
+        expiredDate: new Date(Date.now() + tokensDuration.access_token)
+      };
     } catch (err) {
       throw new AppError('RefreshFailure');
     }
