@@ -1,5 +1,7 @@
-import Fastify from 'fastify';
 import 'dotenv/config';
+import Fastify from 'fastify';
+import cors from '@fastify/cors';
+
 import authRoutes from '../modules/auth/auth.route';
 import userRoutes from '../modules/user/user.route';
 import fastifyCookie from '@fastify/cookie';
@@ -32,6 +34,20 @@ export default function buildServer() {
       process.exit(1);
     }
   });
+
+  if (process.env.NODE_ENV === 'development') {
+    server.register(cors, {
+      origin: /localhost/,
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true
+    });
+  } else {
+    server.register(cors, {
+      origin: /veltrends.com/,
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true
+    });
+  }
 
   server.register(fastifyCookie);
   server.register(swaggerPlugin);
