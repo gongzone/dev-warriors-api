@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import { v2 as cloudinary } from 'cloudinary';
 
 import authRoutes from '../modules/auth/auth.route';
 import userRoutes from '../modules/user/user.route';
@@ -33,6 +34,12 @@ export default function buildServer() {
       server.log.error(err);
       process.exit(1);
     }
+  });
+
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
   });
 
   if (process.env.NODE_ENV === 'development') {

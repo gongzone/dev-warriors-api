@@ -1,6 +1,7 @@
 import { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import AppError from '../libs/app-error';
+import db from '../libs/db';
 import { AccessTokenPayload, validateToken } from '../libs/token';
 
 declare module 'fastify' {
@@ -48,10 +49,24 @@ const requireAuthPlugin: FastifyPluginAsync = async (fastify) => {
 
       if (!decoded) throw new AppError('Unauthorized');
 
+      const currentUser = await db.user.findUnique({
+        where: {
+          id: decoded.userId
+        },
+        include: {
+          character: true
+        }
+      });
+
+      if (!currentUser) throw new AppError('Unauthorized');
+
       request.user = {
-        id: decoded.userId,
-        username: decoded.username,
-        email: decoded.email
+        id: currentUser.id,
+        username: currentUser.username,
+        email: currentUser.email,
+        character: {
+          image: currentUser.character.image
+        }
       };
     }
   );

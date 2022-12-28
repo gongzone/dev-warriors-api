@@ -10,6 +10,7 @@ import {
 import { Token, User } from '@prisma/client';
 import db from '../../libs/db';
 import { LoginBodyType, SignupBodyType } from './auth.schema';
+import { v2 as cloudinary } from 'cloudinary';
 
 export default class UserService {
   private static instance: UserService;
@@ -72,12 +73,21 @@ export default class UserService {
     }
 
     const hashedPassword = await argon2.hash(password);
+    const characterImage = cloudinary.url('character-image/labrador-head.svg', {
+      width: 128,
+      height: 128
+    });
 
     const user = await db.user.create({
       data: {
         username,
         password: hashedPassword,
-        email
+        email,
+        character: {
+          create: {
+            image: characterImage
+          }
+        }
       }
     });
 
