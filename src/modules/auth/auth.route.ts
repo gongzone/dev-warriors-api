@@ -16,7 +16,6 @@ const authRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     },
     async (request, reply) => {
       const result = await authService.singup(request.body);
-      setTokenCookie(reply, result.tokens);
       return reply.code(201).send(result);
     }
   );
@@ -28,7 +27,6 @@ const authRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     },
     async (request, reply) => {
       const result = await authService.login(request.body);
-      setTokenCookie(reply, result.tokens);
       return reply.code(200).send(result);
     }
   );
@@ -49,7 +47,6 @@ const authRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
       }
 
       const result = await authService.refreshToken(refreshToken);
-      setTokenCookie(reply, result);
       return reply.code(200).send(result);
     }
   );

@@ -19,6 +19,9 @@ declare module 'fastify' {
       id: number;
       username: string;
       email: string;
+      character: {
+        image: string;
+      };
     } | null;
     isExpiredToken: boolean;
   }
@@ -65,7 +68,7 @@ const requireAuthPlugin: FastifyPluginAsync = async (fastify) => {
         username: currentUser.username,
         email: currentUser.email,
         character: {
-          image: currentUser.character.image
+          image: currentUser.character!.image
         }
       };
     }

@@ -44,7 +44,7 @@ export default class UserService {
         username: username,
         email: email
       }),
-      await generateToken({
+      generateToken({
         type: 'refresh_token',
         tokenId: token.id,
         rotationCounter: token.rotationCounter
@@ -52,8 +52,26 @@ export default class UserService {
     ]);
 
     return {
-      accessToken,
-      refreshToken
+      accessToken: {
+        value: accessToken,
+        config: {
+          httpOnly: true,
+          expires: new Date(
+            Date.now() + tokensDuration.access_token
+          ).toString(),
+          path: '/'
+        }
+      },
+      refreshToken: {
+        value: refreshToken,
+        config: {
+          httpOnly: true,
+          expires: new Date(
+            Date.now() + tokensDuration.refresh_token
+          ).toString(),
+          path: '/'
+        }
+      }
     };
   }
 
@@ -75,7 +93,8 @@ export default class UserService {
     const hashedPassword = await argon2.hash(password);
     const characterImage = cloudinary.url('character-image/labrador-head.svg', {
       width: 128,
-      height: 128
+      height: 128,
+      color: 'white'
     });
 
     const user = await db.user.create({
@@ -95,7 +114,6 @@ export default class UserService {
 
     return {
       tokens,
-      expiredDate: new Date(Date.now() + tokensDuration.access_token),
       user
     };
   }
@@ -121,7 +139,6 @@ export default class UserService {
 
     return {
       tokens,
-      expiredDate: new Date(Date.now() + tokensDuration.access_token),
       user: foundUserByUsername
     };
   }
@@ -143,6 +160,8 @@ export default class UserService {
 
       if (!tokenItem) throw new Error('Token not found');
       if (tokenItem.blocked) throw new Error('Token is blocked');
+
+      console.log(tokenItem.rotationCounter, decoded.rotationCounter);
 
       if (tokenItem.rotationCounter !== decoded.rotationCounter) {
         await db.token.update({
@@ -167,8 +186,7 @@ export default class UserService {
       });
       const tokens = await this.generateTokens(tokenItem.user, tokenItem);
       return {
-        ...tokens,
-        expiredDate: new Date(Date.now() + tokensDuration.access_token)
+        ...tokens
       };
     } catch (err) {
       throw new AppError('RefreshFailure');

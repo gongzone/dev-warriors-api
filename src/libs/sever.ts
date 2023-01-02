@@ -45,13 +45,13 @@ export default function buildServer() {
   if (process.env.NODE_ENV === 'development') {
     server.register(cors, {
       origin: /localhost/,
-      allowedHeaders: ['Content-Type', 'Authorization'],
+      allowedHeaders: ['Content-Type', 'Cookie', 'Authorization'],
       credentials: true
     });
   } else {
     server.register(cors, {
       origin: /veltrends.com/,
-      allowedHeaders: ['Content-Type', 'Authorization'],
+      allowedHeaders: ['Content-Type', 'Cookie', 'Authorization'],
       credentials: true
     });
   }
