@@ -158,10 +158,14 @@ export default class UserService {
         }
       });
 
-      if (!tokenItem) throw new Error('Token not found');
-      if (tokenItem.blocked) throw new Error('Token is blocked');
+      console.log(
+        tokenItem?.rotationCounter,
+        decoded.rotationCounter,
+        tokenItem?.blocked
+      );
 
-      console.log(tokenItem.rotationCounter, decoded.rotationCounter);
+      if (!tokenItem) throw new Error('Token not found');
+      // if (tokenItem.blocked) throw new Error('Token is blocked');
 
       if (tokenItem.rotationCounter !== decoded.rotationCounter) {
         await db.token.update({
@@ -172,7 +176,7 @@ export default class UserService {
             blocked: true
           }
         });
-        throw new Error('Rotation counter does not match');
+        // throw new Error('Rotation counter does not match');
       }
 
       tokenItem.rotationCounter += 1;

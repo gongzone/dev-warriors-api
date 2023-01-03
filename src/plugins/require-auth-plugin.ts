@@ -34,9 +34,6 @@ const requireAuthPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.decorate(
     'requireAuth',
     async (request: FastifyRequest, reply: FastifyReply) => {
-      console.log(request.headers);
-      console.log(request.headers.authorization);
-
       const token =
         request.headers.authorization?.split('Bearer ')[1] ??
         request.cookies.access_token;
@@ -45,6 +42,8 @@ const requireAuthPlugin: FastifyPluginAsync = async (fastify) => {
         request.isExpiredToken = true;
         return;
       }
+
+      console.log(token);
 
       if (!token) throw new AppError('Unauthorized');
 

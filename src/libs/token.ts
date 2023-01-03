@@ -25,7 +25,7 @@ export interface RefreshTokenPayload {
 export type TokenPayload = AccessTokenPayload | RefreshTokenPayload;
 
 export const tokensDuration = {
-  access_token: 1000 * 5,
+  access_token: 1000 * 10,
   refresh_token: 1000 * 60 * 60 * 24 * 7
 } as const;
 

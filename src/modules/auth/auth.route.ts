@@ -40,8 +40,6 @@ const authRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
       const refreshToken =
         request.body.refreshToken ?? request.cookies.refresh_token;
 
-      console.log(refreshToken);
-
       if (!refreshToken) {
         throw new AppError('BadRequest');
       }
