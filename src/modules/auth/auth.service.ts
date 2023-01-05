@@ -75,6 +75,31 @@ export default class UserService {
     };
   }
 
+  async login({ username, password }: LoginBodyType) {
+    const foundUserByUsername = await db.user.findUnique({
+      where: {
+        username
+      }
+    });
+
+    if (!foundUserByUsername) {
+      throw new AppError('WrongCredentials');
+    }
+
+    const matched = await argon2.verify(foundUserByUsername.password, password);
+
+    if (!matched) {
+      throw new AppError('WrongCredentials');
+    }
+
+    const tokens = await this.generateTokens(foundUserByUsername);
+
+    return {
+      tokens,
+      user: foundUserByUsername
+    };
+  }
+
   async singup({ username, password, confirmPassword, email }: SignupBodyType) {
     const foundUser = await db.user.findFirst({
       where: {
@@ -115,31 +140,6 @@ export default class UserService {
     return {
       tokens,
       user
-    };
-  }
-
-  async login({ username, password }: LoginBodyType) {
-    const foundUserByUsername = await db.user.findUnique({
-      where: {
-        username
-      }
-    });
-
-    if (!foundUserByUsername) {
-      throw new AppError('WrongCredentials');
-    }
-
-    const matched = await argon2.verify(foundUserByUsername.password, password);
-
-    if (!matched) {
-      throw new AppError('WrongCredentials');
-    }
-
-    const tokens = await this.generateTokens(foundUserByUsername);
-
-    return {
-      tokens,
-      user: foundUserByUsername
     };
   }
 

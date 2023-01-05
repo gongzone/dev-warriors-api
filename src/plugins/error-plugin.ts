@@ -12,10 +12,11 @@ const errorPlugin: FastifyPluginAsync = async (fastify) => {
       });
     }
 
-    if (error.statusCode === 400) {
+    if (error.validation) {
+      console.log(error.validation[0].message);
       return reply.code(400).send({
-        name: 'BadRequest',
-        message: error.message,
+        name: 'ValidationError',
+        message: error.validation[0].message,
         statusCode: 400
       });
     }

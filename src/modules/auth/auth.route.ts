@@ -10,17 +10,6 @@ const authRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
   const authService = AuthService.getInstance();
 
   fastify.post(
-    '/signup',
-    {
-      schema: signupSchema
-    },
-    async (request, reply) => {
-      const result = await authService.singup(request.body);
-      return reply.code(201).send(result);
-    }
-  );
-
-  fastify.post(
     '/login',
     {
       schema: loginSchema
@@ -28,6 +17,17 @@ const authRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     async (request, reply) => {
       const result = await authService.login(request.body);
       return reply.code(200).send(result);
+    }
+  );
+
+  fastify.post(
+    '/signup',
+    {
+      schema: signupSchema
+    },
+    async (request, reply) => {
+      const result = await authService.singup(request.body);
+      return reply.code(201).send(result);
     }
   );
 

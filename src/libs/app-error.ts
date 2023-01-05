@@ -5,7 +5,7 @@ import { Type } from '@sinclair/typebox';
 const errors = {
   UserExists: {
     statusCode: 409,
-    message: 'user already exists'
+    message: '이미 가입된 아이디 또는 이메일입니다.'
   },
   PasswordNotMatched: {
     statusCode: 422,

@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import ajvErrors from 'ajv-errors';
 import { v2 as cloudinary } from 'cloudinary';
 
 import authRoutes from '../modules/auth/auth.route';
@@ -23,6 +24,10 @@ export default function buildServer() {
       transport: {
         target: 'pino-pretty'
       }
+    },
+    ajv: {
+      customOptions: { allErrors: true },
+      plugins: [ajvErrors]
     }
   });
 

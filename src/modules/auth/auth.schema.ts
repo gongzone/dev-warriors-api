@@ -1,21 +1,31 @@
 import { Type, Static } from '@sinclair/typebox';
 import { appErrorSchema } from '../../libs/app-error';
 
-// regex --> validation 필요
-// username: /^[A-Za-z]{1}[A-Za-z0-9]{3,19}$/
-// password: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,20}$/
-// 비밀번호와 비밀번호 확인 일치 validation? -> 이미 서비스단에서 체크하는데?
-
 const signupBody = Type.Object({
-  username: Type.String(),
-  password: Type.String(),
-  confirmPassword: Type.String(),
-  email: Type.String()
+  username: Type.RegEx(/^[A-Za-z]{1}[A-Za-z0-9]{4,19}$/, {
+    errorMessage: '아이디 생성 규칙에 따라 작성하여 주십시오.',
+    examples: ['user123']
+  }),
+  password: Type.RegEx(
+    /^(?!((?:[A-Za-z]+)|(?:[~!@#$%^&*()_+=]+)|(?:[0-9]+))$)[A-Za-z\d~!@#$%^&*()_+=]{8,20}$/,
+    {
+      errorMessage: '비밀번호 생성 규칙에 따라 작성하여 주십시오.',
+      examples: ['password123*']
+    }
+  ),
+  confirmPassword: Type.String({
+    examples: ['password123*']
+  }),
+  email: Type.String({
+    format: 'email',
+    errorMessage: '이메일 형식에 맞게 작성하여 주십시오.',
+    examples: ['user123@gmail.com']
+  })
 });
 
 const loginBody = Type.Object({
-  username: Type.String(),
-  password: Type.String()
+  username: Type.String({ examples: ['user123'] }),
+  password: Type.String({ examples: ['password123*'] })
 });
 
 const refreshBody = Type.Object({
@@ -65,6 +75,7 @@ export const signupSchema = {
   body: signupBody,
   response: {
     201: authResponse,
+    400: appErrorSchema,
     409: appErrorSchema,
     422: appErrorSchema
   }
