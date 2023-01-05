@@ -1,5 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
+
 import AppError from '../libs/app-error';
 
 const errorPlugin: FastifyPluginAsync = async (fastify) => {

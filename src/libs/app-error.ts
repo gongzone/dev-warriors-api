@@ -1,19 +1,21 @@
 import { Type } from '@sinclair/typebox';
 
-// 에러처리 공부 필요..
-
 const errors = {
+  ValidationError: {
+    statusCode: 400,
+    message: '검증 처리에서 문제가 발생하였습니다.'
+  },
+  WrongCredentials: {
+    statusCode: 401,
+    message: '아이디 혹은 비밀번호가 틀렸습니다.'
+  },
   UserExists: {
     statusCode: 409,
     message: '이미 가입된 아이디 또는 이메일입니다.'
   },
-  PasswordNotMatched: {
+  PasswordsNotMatched: {
     statusCode: 422,
-    message: 'password does not match'
-  },
-  WrongCredentials: {
-    statusCode: 401,
-    message: 'Invalid username or password'
+    message: '비밀번호가 일치하지 않습니다.'
   },
   Unknown: {
     statusCode: 500,
@@ -66,8 +68,3 @@ export const appErrorSchema = Type.Object({
   message: Type.String(),
   statusCode: Type.Number()
 });
-
-// appErrorSchema.example = {
-//   name: 'hi',
-//   message: ''
-// };

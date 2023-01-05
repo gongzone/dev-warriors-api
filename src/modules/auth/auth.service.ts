@@ -112,7 +112,7 @@ export default class UserService {
     }
 
     if (password !== confirmPassword) {
-      throw new AppError('PasswordNotMatched');
+      throw new AppError('PasswordsNotMatched');
     }
 
     const hashedPassword = await argon2.hash(password);
