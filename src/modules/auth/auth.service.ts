@@ -129,7 +129,7 @@ export default class UserService {
         email,
         character: {
           create: {
-            image: characterImage
+            name: username
           }
         }
       }

@@ -12,20 +12,72 @@ datasource db {
 
 model User {
   id        Int        @id @default(autoincrement())
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
   username  String     @unique
   password  String
   email     String     @unique
-  tokens    Token[]
+  role      Role       @default(USER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   character Character?
+  Token     Token[]
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 model Character {
-  id     Int    @id @default(autoincrement())
-  image  String
-  user   User   @relation(fields: [userId], references: [id])
-  userId Int    @unique
+  id        Int        @id @default(autoincrement())
+  name      String
+  level     Int        @default(1)
+  class     Class?
+  inventory Inventory?
+  equipped  Equipped?
+  user      User       @relation(fields: [userId], references: [id])
+  userId    Int        @unique
+}
+
+model Class {
+  id          Int       @id @default(autoincrement())
+  name        String
+  character   Character @relation(fields: [characterId], references: [id])
+  characterId Int       @unique
+}
+
+model Inventory {
+  id          Int       @id @default(autoincrement())
+  avatars     Avatar[]
+  titles      Title[]
+  character   Character @relation(fields: [characterId], references: [id])
+  characterId Int       @unique
+}
+
+model Equipped {
+  id          Int       @id @default(autoincrement())
+  avatar      Avatar?
+  title       Title?
+  character   Character @relation(fields: [characterId], references: [id])
+  characterId Int       @unique
+}
+
+model Avatar {
+  id          Int       @id @default(autoincrement())
+  path        String
+  equipped    Equipped  @relation(fields: [equippedId], references: [id])
+  equippedId  Int       @unique
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  inventoryId Int
+}
+
+model Title {
+  id          Int       @id @default(autoincrement())
+  text        String
+  color       String
+  equipped    Equipped  @relation(fields: [equippedId], references: [id])
+  equippedId  Int       @unique
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  inventoryId Int
 }
 
 model Token {

@@ -19,10 +19,17 @@ declare module 'fastify' {
       id: number;
       username: string;
       email: string;
+      role: string;
       character: {
-        image: string;
+        name: string;
+        level: number;
       };
     } | null;
+    file: {
+      filename: string;
+      originalname: string;
+      path: string;
+    };
     isExpiredToken: boolean;
   }
 }
@@ -43,8 +50,6 @@ const requireAuthPlugin: FastifyPluginAsync = async (fastify) => {
         return;
       }
 
-      console.log(token);
-
       if (!token) throw new AppError('Unauthorized');
 
       const decoded = await validateToken<AccessTokenPayload>(token);
@@ -55,21 +60,25 @@ const requireAuthPlugin: FastifyPluginAsync = async (fastify) => {
         where: {
           id: decoded.userId
         },
-        include: {
-          character: true
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          role: true,
+          character: {
+            select: {
+              name: true,
+              level: true
+            }
+          }
         }
       });
 
+      console.log(currentUser);
+
       if (!currentUser) throw new AppError('Unauthorized');
 
-      request.user = {
-        id: currentUser.id,
-        username: currentUser.username,
-        email: currentUser.email,
-        character: {
-          image: currentUser.character!.image
-        }
-      };
+      request.user = currentUser;
     }
   );
 };

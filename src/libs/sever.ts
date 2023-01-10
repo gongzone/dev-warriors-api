@@ -1,8 +1,10 @@
 import 'dotenv/config';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import multer from 'fastify-multer';
 import ajvErrors from 'ajv-errors';
 import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
 import authRoutes from '../modules/auth/auth.route';
 import userRoutes from '../modules/user/user.route';
@@ -10,10 +12,12 @@ import fastifyCookie from '@fastify/cookie';
 import requireAuthPlugin from '../plugins/require-auth-plugin';
 import errorPlugin from '../plugins/error-plugin';
 import swaggerPlugin from '../plugins/swagger-plugin';
+import adminRoutes from '../modules/admin/admin.route';
 
 declare module 'fastify' {
   interface FastifyInstance {
     start: () => Promise<void>;
+    upload: ReturnType<typeof multer>;
   }
 }
 
@@ -47,6 +51,21 @@ export default function buildServer() {
     api_secret: process.env.CLOUDINARY_API_SECRET
   });
 
+  const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: async (req, file) => {
+      return {
+        folder: 'character-avatar',
+        format: ['svg'],
+        transformation: [{ width: 128, height: 128, color: 'white' }]
+      };
+    }
+  });
+
+  const upload = multer({ storage });
+
+  server.decorate('upload', upload);
+
   if (process.env.NODE_ENV === 'development') {
     server.register(cors, {
       origin: /localhost/,
@@ -69,6 +88,7 @@ export default function buildServer() {
 
   server.register(authRoutes, { prefix: 'api/auth' });
   server.register(userRoutes, { prefix: 'api/users' });
+  server.register(adminRoutes, { prefix: 'api/admin' });
 
   return server;
 }

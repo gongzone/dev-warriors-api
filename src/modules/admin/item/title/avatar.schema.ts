@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox';
-import { appErrorSchema } from '../../libs/app-error';
+import { appErrorSchema } from '../../../../libs/app-error';
 
 const userResponse = Type.Object({
   id: Type.Number(),
